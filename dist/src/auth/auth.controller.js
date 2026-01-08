@@ -25,19 +25,19 @@ let AuthController = class AuthController {
     async login(loginDto) {
         return this.authService.login(loginDto);
     }
-    getProfile(req) {
+    ambilProfil(req) {
         return req.user;
     }
-    async changePassword(req, changePasswordDto) {
-        return this.authService.changePassword(req.user.id, changePasswordDto);
+    async ubahKataSandi(req, ubahKataSandiDto) {
+        return this.authService.ubahKataSandi(req.user.id, ubahKataSandiDto);
     }
 };
 exports.AuthController = AuthController;
 __decorate([
     (0, common_1.Post)('login'),
-    (0, swagger_1.ApiOperation)({ summary: 'User login' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Login successful' }),
-    (0, swagger_1.ApiResponse)({ status: 401, description: 'Invalid credentials' }),
+    (0, swagger_1.ApiOperation)({ summary: 'Login pengguna' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Login berhasil' }),
+    (0, swagger_1.ApiResponse)({ status: 401, description: 'Kredensial tidak valid' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [auth_dto_1.LoginDto]),
@@ -45,27 +45,25 @@ __decorate([
 ], AuthController.prototype, "login", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, common_1.Get)('me'),
+    (0, common_1.Get)('profil'),
     (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Get current user profile' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Profile retrieved successfully' }),
+    (0, swagger_1.ApiOperation)({ summary: 'Ambil profil pengguna saat ini' }),
     __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
-], AuthController.prototype, "getProfile", null);
+], AuthController.prototype, "ambilProfil", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, common_1.Post)('change-password'),
+    (0, common_1.Post)('ubah-kata-sandi'),
     (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Change user password' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Password changed successfully' }),
+    (0, swagger_1.ApiOperation)({ summary: 'Ubah kata sandi pengguna' }),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, auth_dto_1.ChangePasswordDto]),
+    __metadata("design:paramtypes", [Object, auth_dto_1.UbahKataSandiDto]),
     __metadata("design:returntype", Promise)
-], AuthController.prototype, "changePassword", null);
+], AuthController.prototype, "ubahKataSandi", null);
 exports.AuthController = AuthController = __decorate([
     (0, swagger_1.ApiTags)('auth'),
     (0, common_1.Controller)('auth'),

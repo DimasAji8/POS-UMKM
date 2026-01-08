@@ -11,11 +11,11 @@ const common_1 = require("@nestjs/common");
 const core_1 = require("@nestjs/core");
 const prisma_module_1 = require("./prisma/prisma.module");
 const auth_module_1 = require("./auth/auth.module");
-const users_module_1 = require("./users/users.module");
-const products_module_1 = require("./products/products.module");
-const sales_module_1 = require("./sales/sales.module");
-const stock_module_1 = require("./stock/stock.module");
-const reports_module_1 = require("./reports/reports.module");
+const pengguna_module_1 = require("./pengguna/pengguna.module");
+const produk_module_1 = require("./produk/produk.module");
+const penjualan_module_1 = require("./penjualan/penjualan.module");
+const stok_module_1 = require("./stok/stok.module");
+const laporan_module_1 = require("./laporan/laporan.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -24,11 +24,11 @@ exports.AppModule = AppModule = __decorate([
         imports: [
             prisma_module_1.PrismaModule,
             auth_module_1.AuthModule,
-            users_module_1.UsersModule,
-            products_module_1.ProductsModule,
-            sales_module_1.SalesModule,
-            stock_module_1.StockModule,
-            reports_module_1.ReportsModule,
+            pengguna_module_1.PenggunaModule,
+            produk_module_1.ProdukModule,
+            penjualan_module_1.PenjualanModule,
+            stok_module_1.StokModule,
+            laporan_module_1.LaporanModule,
         ],
         providers: [
             {

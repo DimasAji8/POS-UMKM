@@ -1,8 +1,8 @@
 export declare class LoginDto {
     username: string;
-    password: string;
+    kataSandi: string;
 }
-export declare class ChangePasswordDto {
-    currentPassword: string;
-    newPassword: string;
+export declare class UbahKataSandiDto {
+    kataSandiSaatIni: string;
+    kataSandiBaru: string;
 }

@@ -2,21 +2,21 @@ import { Module, ValidationPipe } from '@nestjs/common';
 import { APP_PIPE } from '@nestjs/core';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
-import { ProductsModule } from './products/products.module';
-import { SalesModule } from './sales/sales.module';
-import { StockModule } from './stock/stock.module';
-import { ReportsModule } from './reports/reports.module';
+import { PenggunaModule } from './pengguna/pengguna.module';
+import { ProdukModule } from './produk/produk.module';
+import { PenjualanModule } from './penjualan/penjualan.module';
+import { StokModule } from './stok/stok.module';
+import { LaporanModule } from './laporan/laporan.module';
 
 @Module({
   imports: [
     PrismaModule,
     AuthModule,
-    UsersModule,
-    ProductsModule,
-    SalesModule,
-    StockModule,
-    ReportsModule,
+    PenggunaModule,
+    ProdukModule,
+    PenjualanModule,
+    StokModule,
+    LaporanModule,
   ],
   providers: [
     {

@@ -26,48 +26,48 @@ npm run start:dev
 
 ## Default Admin
 - Username: `admin`
-- Password: `admin123`
+- Kata Sandi: `admin123`
 
 ## API Endpoints
 
-### Auth
-- `POST /auth/login` - Login
-- `GET /auth/me` - Get profile
-- `POST /auth/change-password` - Change password
+### Autentikasi
+- `POST /autentikasi/login` - Login
+- `GET /autentikasi/profil` - Ambil profil
+- `POST /autentikasi/ubah-kata-sandi` - Ubah kata sandi
 
-### Users (ADMIN only)
-- `GET /users` - List users
-- `POST /users` - Create user
-- `PATCH /users/:id/status` - Update user status
-- `PATCH /users/:id/reset-password` - Reset password
+### Pengguna (ADMIN only)
+- `GET /pengguna` - Daftar pengguna
+- `POST /pengguna` - Buat pengguna
+- `PATCH /pengguna/:id/status` - Update status pengguna
+- `PATCH /pengguna/:id/reset-kata-sandi` - Reset kata sandi
 
-### Products
-- `GET /products` - List products (with search, filter, pagination)
-- `GET /products/:id` - Get product detail
-- `POST /products` - Create product (ADMIN)
-- `PATCH /products/:id` - Update product (ADMIN)
-- `PATCH /products/:id/status` - Update product status (ADMIN)
+### Produk
+- `GET /produk` - Daftar produk (dengan cari, filter, paginasi)
+- `GET /produk/:id` - Detail produk
+- `POST /produk` - Buat produk (ADMIN)
+- `PATCH /produk/:id` - Update produk (ADMIN)
+- `PATCH /produk/:id/status` - Update status produk (ADMIN)
 
-### Sales
-- `POST /sales` - Create sale (ADMIN/CASHIER)
-- `GET /sales` - List sales (with filters)
-- `GET /sales/:id` - Get sale detail
+### Penjualan
+- `POST /penjualan` - Buat penjualan (ADMIN/KASIR)
+- `GET /penjualan` - Daftar penjualan (dengan filter)
+- `GET /penjualan/:id` - Detail penjualan
 
-### Stock (ADMIN only)
-- `POST /stock/adjustments` - Create stock adjustment
-- `GET /stock/adjustments` - List stock adjustments
+### Stok (ADMIN only)
+- `POST /stok/penyesuaian` - Buat penyesuaian stok
+- `GET /stok/penyesuaian` - Daftar penyesuaian stok
 
-### Reports (ADMIN only)
-- `GET /reports/sales-summary` - Sales summary report
-- `GET /reports/top-products` - Top products report
+### Laporan (ADMIN only)
+- `GET /laporan/ringkasan-penjualan` - Ringkasan penjualan
+- `GET /laporan/produk-terlaris` - Produk terlaris
 
-## Features
+## Fitur
 
-- JWT Authentication
-- Role-based access control (ADMIN/CASHIER)
-- Atomic transactions for sales
-- Stock management
-- Invoice generation
-- Comprehensive reporting
-- Input validation
-- Pagination support
+- Autentikasi JWT
+- Kontrol akses berbasis peran (ADMIN/KASIR)
+- Transaksi atomik untuk penjualan
+- Manajemen stok
+- Pembuatan faktur
+- Laporan komprehensif
+- Validasi input
+- Dukungan paginasi

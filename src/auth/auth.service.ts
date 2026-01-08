@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
-import { LoginDto, ChangePasswordDto } from './dto/auth.dto';
+import { LoginDto, UbahKataSandiDto } from './dto/auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -12,48 +12,48 @@ export class AuthService {
   ) {}
 
   async login(loginDto: LoginDto) {
-    const user = await this.prisma.user.findUnique({
+    const pengguna = await this.prisma.pengguna.findUnique({
       where: { username: loginDto.username },
     });
 
-    if (!user || !user.isActive) {
-      throw new UnauthorizedException('Invalid credentials');
+    if (!pengguna || !pengguna.aktif) {
+      throw new UnauthorizedException('Kredensial tidak valid');
     }
 
-    const isPasswordValid = await bcrypt.compare(loginDto.password, user.passwordHash);
-    if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid credentials');
+    const kataSandiValid = await bcrypt.compare(loginDto.kataSandi, pengguna.hashKataSandi);
+    if (!kataSandiValid) {
+      throw new UnauthorizedException('Kredensial tidak valid');
     }
 
-    const payload = { username: user.username, sub: user.id };
+    const payload = { username: pengguna.username, sub: pengguna.id };
     return {
       accessToken: this.jwtService.sign(payload),
-      user: {
-        id: user.id,
-        name: user.name,
-        username: user.username,
-        role: user.role,
+      pengguna: {
+        id: pengguna.id,
+        nama: pengguna.nama,
+        username: pengguna.username,
+        role: pengguna.role,
       },
     };
   }
 
-  async changePassword(userId: string, changePasswordDto: ChangePasswordDto) {
-    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+  async ubahKataSandi(idPengguna: string, ubahKataSandiDto: UbahKataSandiDto) {
+    const pengguna = await this.prisma.pengguna.findUnique({ where: { id: idPengguna } });
     
-    const isCurrentPasswordValid = await bcrypt.compare(
-      changePasswordDto.currentPassword,
-      user.passwordHash,
+    const kataSandiSaatIniValid = await bcrypt.compare(
+      ubahKataSandiDto.kataSandiSaatIni,
+      pengguna.hashKataSandi,
     );
-    if (!isCurrentPasswordValid) {
-      throw new UnauthorizedException('Current password is incorrect');
+    if (!kataSandiSaatIniValid) {
+      throw new UnauthorizedException('Kata sandi saat ini salah');
     }
 
-    const hashedNewPassword = await bcrypt.hash(changePasswordDto.newPassword, 10);
-    await this.prisma.user.update({
-      where: { id: userId },
-      data: { passwordHash: hashedNewPassword },
+    const hashKataSandiBaru = await bcrypt.hash(ubahKataSandiDto.kataSandiBaru, 10);
+    await this.prisma.pengguna.update({
+      where: { id: idPengguna },
+      data: { hashKataSandi: hashKataSandiBaru },
     });
 
-    return { message: 'Password changed successfully' };
+    return { pesan: 'Kata sandi berhasil diubah' };
   }
 }

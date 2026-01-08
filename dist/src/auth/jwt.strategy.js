@@ -24,9 +24,9 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
         this.prisma = prisma;
     }
     async validate(payload) {
-        return await this.prisma.user.findUnique({
+        return await this.prisma.pengguna.findUnique({
             where: { id: payload.sub },
-            select: { id: true, username: true, name: true, role: true, isActive: true },
+            select: { id: true, username: true, nama: true, role: true, aktif: true },
         });
     }
 };

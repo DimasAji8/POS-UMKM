@@ -9,90 +9,90 @@ datasource db {
 
 enum Role {
   ADMIN
-  CASHIER
+  KASIR
 }
 
-enum AdjustmentType {
-  IN
-  OUT
+enum TipePenyesuaian {
+  MASUK
+  KELUAR
 }
 
-model User {
+model Pengguna {
   id           String   @id @default(cuid())
-  name         String
+  nama         String
   username     String   @unique
-  passwordHash String
+  hashKataSandi String  @map("hash_kata_sandi")
   role         Role
-  isActive     Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  aktif        Boolean  @default(true)
+  dibuatPada   DateTime @default(now()) @map("dibuat_pada")
+  diperbaruiPada DateTime @updatedAt @map("diperbarui_pada")
 
-  sales           Sale[]
-  stockAdjustments StockAdjustment[]
+  penjualan        Penjualan[]
+  penyesuaianStok  PenyesuaianStok[]
 
-  @@map("users")
+  @@map("pengguna")
 }
 
-model Product {
+model Produk {
   id        String   @id @default(cuid())
-  sku       String   @unique
-  name      String
-  category  String?
-  unit      String?
-  price     Decimal  @db.Decimal(10, 2)
-  stock     Int      @default(0)
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  kode      String   @unique
+  nama      String
+  kategori  String?
+  satuan    String?
+  harga     Decimal  @db.Decimal(10, 2)
+  stok      Int      @default(0)
+  aktif     Boolean  @default(true)
+  dibuatPada   DateTime @default(now()) @map("dibuat_pada")
+  diperbaruiPada DateTime @updatedAt @map("diperbarui_pada")
 
-  saleItems        SaleItem[]
-  stockAdjustments StockAdjustment[]
+  itemPenjualan    ItemPenjualan[]
+  penyesuaianStok  PenyesuaianStok[]
 
-  @@map("products")
+  @@map("produk")
 }
 
-model Sale {
-  id           String   @id @default(cuid())
-  invoiceNo    String   @unique
-  cashierId    String
-  total        Decimal  @db.Decimal(10, 2)
-  paidAmount   Decimal  @db.Decimal(10, 2)
-  changeAmount Decimal  @db.Decimal(10, 2)
-  createdAt    DateTime @default(now())
+model Penjualan {
+  id              String   @id @default(cuid())
+  noFaktur        String   @unique @map("no_faktur")
+  idKasir         String   @map("id_kasir")
+  total           Decimal  @db.Decimal(10, 2)
+  jumlahBayar     Decimal  @db.Decimal(10, 2) @map("jumlah_bayar")
+  jumlahKembalian Decimal  @db.Decimal(10, 2) @map("jumlah_kembalian")
+  dibuatPada      DateTime @default(now()) @map("dibuat_pada")
 
-  cashier   User       @relation(fields: [cashierId], references: [id])
-  saleItems SaleItem[]
+  kasir         Pengguna        @relation(fields: [idKasir], references: [id])
+  itemPenjualan ItemPenjualan[]
 
-  @@map("sales")
+  @@map("penjualan")
 }
 
-model SaleItem {
+model ItemPenjualan {
   id          String  @id @default(cuid())
-  saleId      String
-  productId   String
-  sku         String
-  productName String
-  qty         Int
-  price       Decimal @db.Decimal(10, 2)
+  idPenjualan String  @map("id_penjualan")
+  idProduk    String  @map("id_produk")
+  kode        String
+  namaProduk  String  @map("nama_produk")
+  jumlah      Int
+  harga       Decimal @db.Decimal(10, 2)
   subtotal    Decimal @db.Decimal(10, 2)
 
-  sale    Sale    @relation(fields: [saleId], references: [id])
-  product Product @relation(fields: [productId], references: [id])
+  penjualan Penjualan @relation(fields: [idPenjualan], references: [id])
+  produk    Produk    @relation(fields: [idProduk], references: [id])
 
-  @@map("sale_items")
+  @@map("item_penjualan")
 }
 
-model StockAdjustment {
-  id        String         @id @default(cuid())
-  productId String
-  userId    String
-  type      AdjustmentType
-  qty       Int
-  note      String?
-  createdAt DateTime       @default(now())
+model PenyesuaianStok {
+  id        String          @id @default(cuid())
+  idProduk  String          @map("id_produk")
+  idPengguna String         @map("id_pengguna")
+  tipe      TipePenyesuaian
+  jumlah    Int
+  catatan   String?
+  dibuatPada DateTime       @default(now()) @map("dibuat_pada")
 
-  product Product @relation(fields: [productId], references: [id])
-  user    User    @relation(fields: [userId], references: [id])
+  produk   Produk   @relation(fields: [idProduk], references: [id])
+  pengguna Pengguna @relation(fields: [idPengguna], references: [id])
 
-  @@map("stock_adjustments")
+  @@map("penyesuaian_stok")
 }
