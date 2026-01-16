@@ -5,7 +5,7 @@ import { LoginDto, UbahKataSandiDto } from './dto/auth.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 
 @ApiTags('Autentikasi')
-@Controller('autentikasi')
+@Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
