@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Param, Body, Query, UseGuards, Request } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { PenjualanService } from './penjualan.service';
 import { CreatePenjualanDto } from './dto/penjualan.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
@@ -7,8 +7,8 @@ import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '@prisma/client';
 
-@ApiTags('transactions')
-@Controller('transactions')
+@ApiTags('Penjualan')
+@Controller('penjualan')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class PenjualanController {
@@ -17,24 +17,29 @@ export class PenjualanController {
   @Post()
   @UseGuards(RolesGuard)
   @Roles(Role.ADMIN, Role.KASIR)
-  @ApiOperation({ summary: 'Buat transaksi penjualan baru' })
+  @ApiOperation({
+    summary: 'Buat transaksi penjualan',
+    description: 'Membuat transaksi penjualan baru. Stok produk akan otomatis berkurang.',
+  })
+  @ApiResponse({ status: 201, description: 'Transaksi berhasil dibuat' })
+  @ApiResponse({ status: 400, description: 'Stok tidak mencukupi atau produk tidak aktif' })
   async create(@Body() createPenjualanDto: CreatePenjualanDto, @Request() req) {
     const data = await this.penjualanService.create(createPenjualanDto, req.user.id);
-    return {
-      success: true,
-      message: 'Transaksi berhasil',
-      data,
-    };
+    return { success: true, message: 'Transaksi berhasil', data };
   }
 
   @Get()
-  @ApiOperation({ summary: 'Ambil semua penjualan dengan filter' })
-  @ApiQuery({ name: 'halaman', required: false })
-  @ApiQuery({ name: 'batas', required: false })
-  @ApiQuery({ name: 'startDate', required: false })
-  @ApiQuery({ name: 'endDate', required: false })
-  @ApiQuery({ name: 'noFaktur', required: false })
-  @ApiQuery({ name: 'cashierId', required: false })
+  @ApiOperation({
+    summary: 'Lihat daftar penjualan',
+    description: 'ADMIN melihat semua, KASIR hanya transaksinya sendiri.',
+  })
+  @ApiQuery({ name: 'halaman', required: false, description: 'Nomor halaman (default: 1)' })
+  @ApiQuery({ name: 'batas', required: false, description: 'Jumlah per halaman (default: 10)' })
+  @ApiQuery({ name: 'startDate', required: false, description: 'Filter dari tanggal (YYYY-MM-DD)' })
+  @ApiQuery({ name: 'endDate', required: false, description: 'Filter sampai tanggal (YYYY-MM-DD)' })
+  @ApiQuery({ name: 'noFaktur', required: false, description: 'Cari nomor faktur' })
+  @ApiQuery({ name: 'cashierId', required: false, description: 'Filter ID kasir (ADMIN only)' })
+  @ApiResponse({ status: 200, description: 'Daftar penjualan dengan paginasi' })
   findAll(
     @Request() req,
     @Query('halaman') halaman?: string,
@@ -57,7 +62,13 @@ export class PenjualanController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Ambil penjualan berdasarkan ID' })
+  @ApiOperation({
+    summary: 'Lihat detail penjualan',
+    description: 'ADMIN melihat semua, KASIR hanya transaksinya sendiri.',
+  })
+  @ApiParam({ name: 'id', description: 'ID penjualan' })
+  @ApiResponse({ status: 200, description: 'Detail penjualan' })
+  @ApiResponse({ status: 404, description: 'Penjualan tidak ditemukan' })
   findOne(@Param('id') id: string, @Request() req) {
     return this.penjualanService.findOne(id, req.user.id, req.user.role);
   }
