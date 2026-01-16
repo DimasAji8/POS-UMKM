@@ -1,6 +1,6 @@
 # Kasir UMKM API
 
-Backend API untuk sistem Point of Sale (POS) menggunakan NestJS, Prisma, dan MySQL.
+Backend API untuk sistem Point of Sale (POS) menggunakan NestJS, Prisma, dan Supabase PostgreSQL.
 
 ## Setup
 
@@ -9,11 +9,16 @@ Backend API untuk sistem Point of Sale (POS) menggunakan NestJS, Prisma, dan MyS
 npm install
 ```
 
-2. Setup database:
+2. Setup Supabase database:
 ```bash
-# Update DATABASE_URL di .env
-# Jalankan migration
-npm run migrate
+# Update DATABASE_URL di .env dengan Supabase connection string
+# Format: postgresql://postgres:[PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres
+
+# Generate Prisma Client
+npx prisma generate
+
+# Push schema ke Supabase
+npx prisma db push
 
 # Seed data admin default
 npm run seed
@@ -23,6 +28,9 @@ npm run seed
 ```bash
 npm run start:dev
 ```
+
+API akan berjalan di: http://localhost:3000
+Swagger Docs: http://localhost:3000/api/docs
 
 ## Default Admin
 - Username: `admin`

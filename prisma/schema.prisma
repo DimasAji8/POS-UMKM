@@ -5,6 +5,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL")
 }
 
 enum Role {
@@ -15,6 +16,18 @@ enum Role {
 enum TipePenyesuaian {
   MASUK
   KELUAR
+}
+
+model Kategori {
+  id        String   @id @default(cuid())
+  nama      String   @unique
+  aktif     Boolean  @default(true)
+  dibuatPada   DateTime @default(now()) @map("dibuat_pada")
+  diperbaruiPada DateTime @updatedAt @map("diperbarui_pada")
+
+  produk    Produk[]
+
+  @@map("kategori")
 }
 
 model Pengguna {
@@ -37,7 +50,8 @@ model Produk {
   id        String   @id @default(cuid())
   kode      String   @unique
   nama      String
-  kategori  String?
+  kategori  String?  // Keep for backward compatibility
+  idKategori String?  @map("id_kategori")
   satuan    String?
   harga     Decimal  @db.Decimal(10, 2)
   stok      Int      @default(0)
@@ -45,6 +59,7 @@ model Produk {
   dibuatPada   DateTime @default(now()) @map("dibuat_pada")
   diperbaruiPada DateTime @updatedAt @map("diperbarui_pada")
 
+  kategoriRelasi   Kategori? @relation(fields: [idKategori], references: [id])
   itemPenjualan    ItemPenjualan[]
   penyesuaianStok  PenyesuaianStok[]
 

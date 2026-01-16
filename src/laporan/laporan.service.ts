@@ -17,11 +17,31 @@ export class LaporanService {
       _sum: { total: true },
     });
 
+    const itemCount = await this.prisma.itemPenjualan.aggregate({
+      where: {
+        penjualan: {
+          dibuatPada: {
+            gte: new Date(tanggalDari),
+            lte: new Date(tanggalSampai),
+          },
+        },
+      },
+      _sum: { jumlah: true },
+    });
+
+    const totalRevenue = hasil._sum.total ? Number(hasil._sum.total) : 0;
+    const totalTransactions = hasil._count.id;
+    const averageTransaction = totalTransactions > 0 ? totalRevenue / totalTransactions : 0;
+
     return {
-      totalTransaksi: hasil._count.id,
-      totalPendapatan: hasil._sum.total || 0,
-      tanggalDari,
-      tanggalSampai,
+      totalRevenue,
+      totalTransactions,
+      averageTransaction: Math.round(averageTransaction),
+      totalItems: itemCount._sum.jumlah || 0,
+      period: {
+        startDate: tanggalDari,
+        endDate: tanggalSampai,
+      },
     };
   }
 
@@ -52,10 +72,28 @@ export class LaporanService {
     });
 
     return produkTerlaris.map(item => ({
-      idProduk: item.idProduk,
-      namaProduk: item.namaProduk,
-      totalJumlah: item._sum.jumlah,
-      totalPendapatan: item._sum.subtotal,
+      productId: item.idProduk,
+      productName: item.namaProduk,
+      quantitySold: item._sum.jumlah,
+      revenue: Number(item._sum.subtotal),
+    }));
+  }
+
+  async lowStockProducts(threshold = 10) {
+    const products = await this.prisma.produk.findMany({
+      where: {
+        stok: { lte: threshold },
+        aktif: true,
+      },
+      orderBy: { stok: 'asc' },
+    });
+
+    return products.map(p => ({
+      id: p.id,
+      name: p.nama,
+      stock: p.stok,
+      categoryId: p.kategori || '',
+      sku: p.kode,
     }));
   }
 }

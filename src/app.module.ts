@@ -7,6 +7,8 @@ import { ProdukModule } from './produk/produk.module';
 import { PenjualanModule } from './penjualan/penjualan.module';
 import { StokModule } from './stok/stok.module';
 import { LaporanModule } from './laporan/laporan.module';
+import { CategoriesModule } from './categories/categories.module';
+import { ProfileModule } from './profile/profile.module';
 
 @Module({
   imports: [
@@ -17,6 +19,8 @@ import { LaporanModule } from './laporan/laporan.module';
     PenjualanModule,
     StokModule,
     LaporanModule,
+    CategoriesModule,
+    ProfileModule,
   ],
   providers: [
     {

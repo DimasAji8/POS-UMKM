@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoginDto, UbahKataSandiDto } from './dto/auth.dto';
+import { UpdateProfileDto } from './dto/profile.dto';
 
 @Injectable()
 export class AuthService {
@@ -55,5 +56,23 @@ export class AuthService {
     });
 
     return { pesan: 'Kata sandi berhasil diubah' };
+  }
+
+  async updateProfile(idPengguna: string, updateProfileDto: UpdateProfileDto) {
+    const pengguna = await this.prisma.pengguna.update({
+      where: { id: idPengguna },
+      data: {
+        nama: updateProfileDto.name,
+      },
+    });
+
+    return {
+      id: pengguna.id,
+      username: pengguna.username,
+      name: pengguna.nama,
+      role: pengguna.role,
+      email: updateProfileDto.email || '',
+      createdAt: pengguna.dibuatPada,
+    };
   }
 }

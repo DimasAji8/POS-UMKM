@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Param, Body, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Patch, Param, Body, Query, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { ProdukService } from './produk.service';
 import { CreateProdukDto, UpdateProdukDto, UpdateStatusProdukDto } from './dto/produk.dto';
@@ -7,8 +7,8 @@ import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '@prisma/client';
 
-@ApiTags('produk')
-@Controller('produk')
+@ApiTags('products')
+@Controller('products')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class ProdukController {
@@ -16,12 +16,12 @@ export class ProdukController {
 
   @Get()
   @ApiOperation({ summary: 'Ambil semua produk dengan paginasi dan filter' })
-  @ApiQuery({ name: 'cari', required: false })
+  @ApiQuery({ name: 'search', required: false })
   @ApiQuery({ name: 'aktif', required: false })
   @ApiQuery({ name: 'halaman', required: false })
   @ApiQuery({ name: 'batas', required: false })
   findAll(
-    @Query('cari') cari?: string,
+    @Query('search') cari?: string,
     @Query('aktif') aktif?: string,
     @Query('halaman') halaman?: string,
     @Query('batas') batas?: string,
@@ -44,16 +44,51 @@ export class ProdukController {
   @UseGuards(RolesGuard)
   @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Buat produk baru (ADMIN)' })
-  create(@Body() createProdukDto: CreateProdukDto) {
-    return this.produkService.create(createProdukDto);
+  async create(@Body() createProdukDto: CreateProdukDto) {
+    const data = await this.produkService.create(createProdukDto);
+    return {
+      success: true,
+      message: 'Produk berhasil ditambahkan',
+      data,
+    };
   }
 
-  @Patch(':id')
+  @Put(':id')
   @UseGuards(RolesGuard)
   @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Update produk (ADMIN)' })
-  update(@Param('id') id: string, @Body() updateProdukDto: UpdateProdukDto) {
-    return this.produkService.update(id, updateProdukDto);
+  async update(@Param('id') id: string, @Body() updateProdukDto: UpdateProdukDto) {
+    const data = await this.produkService.update(id, updateProdukDto);
+    return {
+      success: true,
+      message: 'Produk berhasil diupdate',
+      data,
+    };
+  }
+
+  @Delete(':id')
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
+  @ApiOperation({ summary: 'Delete produk (ADMIN)' })
+  async delete(@Param('id') id: string) {
+    await this.produkService.delete(id);
+    return {
+      success: true,
+      message: 'Produk berhasil dihapus',
+    };
+  }
+
+  @Patch(':id/stock')
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
+  @ApiOperation({ summary: 'Adjust stock produk (ADMIN)' })
+  async adjustStock(@Param('id') id: string, @Body('adjustment') adjustment: number) {
+    const data = await this.produkService.adjustStock(id, adjustment);
+    return {
+      success: true,
+      message: 'Stok berhasil diupdate',
+      data,
+    };
   }
 
   @Patch(':id/status')
@@ -64,3 +99,4 @@ export class ProdukController {
     return this.produkService.updateStatus(id, updateStatusDto);
   }
 }
+

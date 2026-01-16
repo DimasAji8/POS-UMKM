@@ -1,7 +1,7 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreatePenggunaDto, UpdateStatusPenggunaDto } from './dto/pengguna.dto';
+import { CreatePenggunaDto, UpdatePenggunaDto, UpdateStatusPenggunaDto } from './dto/pengguna.dto';
 
 @Injectable()
 export class PenggunaService {
@@ -49,6 +49,55 @@ export class PenggunaService {
     });
   }
 
+  async update(id: string, updatePenggunaDto: UpdatePenggunaDto) {
+    const pengguna = await this.prisma.pengguna.findUnique({ where: { id } });
+    if (!pengguna) {
+      throw new NotFoundException('User tidak ditemukan');
+    }
+
+    if (updatePenggunaDto.username && updatePenggunaDto.username !== pengguna.username) {
+      const usernameAda = await this.prisma.pengguna.findUnique({
+        where: { username: updatePenggunaDto.username },
+      });
+      if (usernameAda) {
+        throw new ConflictException('Username sudah digunakan');
+      }
+    }
+
+    const data: any = {
+      nama: updatePenggunaDto.nama,
+      username: updatePenggunaDto.username,
+      role: updatePenggunaDto.role,
+    };
+
+    if (updatePenggunaDto.kataSandi) {
+      data.hashKataSandi = await bcrypt.hash(updatePenggunaDto.kataSandi, 10);
+    }
+
+    return this.prisma.pengguna.update({
+      where: { id },
+      data,
+      select: {
+        id: true,
+        nama: true,
+        username: true,
+        role: true,
+        aktif: true,
+        dibuatPada: true,
+      },
+    });
+  }
+
+  async delete(id: string) {
+    const pengguna = await this.prisma.pengguna.findUnique({ where: { id } });
+    if (!pengguna) {
+      throw new NotFoundException('User tidak ditemukan');
+    }
+
+    await this.prisma.pengguna.delete({ where: { id } });
+    return { message: 'User berhasil dihapus' };
+  }
+
   async updateStatus(id: string, updateStatusDto: UpdateStatusPenggunaDto) {
     return this.prisma.pengguna.update({
       where: { id },
@@ -76,3 +125,4 @@ export class PenggunaService {
     });
   }
 }
+

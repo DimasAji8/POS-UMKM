@@ -14,7 +14,7 @@ export class ProdukService {
       where.OR = [
         { nama: { contains: cari } },
         { kode: { contains: cari } },
-        { kategori: { contains: cari } },
+        { kategori: { nama: { contains: cari } } },
       ];
     }
 
@@ -27,13 +27,20 @@ export class ProdukService {
         where,
         skip: lewati,
         take: batas,
+        include: { kategoriRelasi: true },
         orderBy: { dibuatPada: 'desc' },
       }),
       this.prisma.produk.count({ where }),
     ]);
 
+    // Map response untuk include kategori name
+    const mappedProduk = produk.map(p => ({
+      ...p,
+      kategori: p.kategoriRelasi?.nama || p.kategori || null,
+    }));
+
     return {
-      data: produk,
+      data: mappedProduk,
       meta: {
         total,
         halaman,
@@ -44,10 +51,17 @@ export class ProdukService {
   }
 
   async findOne(id: string) {
-    const produk = await this.prisma.produk.findUnique({ where: { id } });
+    const produk = await this.prisma.produk.findUnique({ 
+      where: { id },
+      include: { kategoriRelasi: true }
+    });
     if (!produk) {
       throw new NotFoundException('Produk tidak ditemukan');
     }
+    return {
+      ...produk,
+      kategori: produk.kategoriRelasi?.nama || produk.kategori || null,
+    };
     return produk;
   }
 
@@ -73,6 +87,33 @@ export class ProdukService {
     });
   }
 
+  async delete(id: string) {
+    await this.findOne(id);
+    await this.prisma.produk.delete({ where: { id } });
+    return { message: 'Produk berhasil dihapus' };
+  }
+
+  async adjustStock(id: string, adjustment: number) {
+    const produk = await this.findOne(id);
+    const newStock = produk.stok + adjustment;
+
+    if (newStock < 0) {
+      throw new ConflictException('Stok tidak boleh negatif');
+    }
+
+    const updated = await this.prisma.produk.update({
+      where: { id },
+      data: { stok: newStock },
+    });
+
+    return {
+      id: updated.id,
+      name: updated.nama,
+      stock: updated.stok,
+      previousStock: produk.stok,
+    };
+  }
+
   async updateStatus(id: string, updateStatusDto: UpdateStatusProdukDto) {
     await this.findOne(id);
     return this.prisma.produk.update({
@@ -81,3 +122,4 @@ export class ProdukService {
     });
   }
 }
+

@@ -13,10 +13,10 @@ export class CreateProdukDto {
   @IsNotEmpty({ message: 'Nama tidak boleh kosong' })
   nama: string;
 
-  @ApiPropertyOptional({ example: 'Makanan', description: 'Kategori produk' })
+  @ApiPropertyOptional({ example: 'cat-123', description: 'ID Kategori produk' })
   @IsOptional()
-  @IsString({ message: 'Kategori harus berupa teks' })
-  kategori?: string;
+  @IsString({ message: 'ID Kategori harus berupa teks' })
+  idKategori?: string;
 
   @ApiPropertyOptional({ example: 'pcs', description: 'Satuan produk' })
   @IsOptional()
@@ -42,10 +42,10 @@ export class UpdateProdukDto {
   @IsString({ message: 'Nama harus berupa teks' })
   nama?: string;
 
-  @ApiPropertyOptional({ example: 'Makanan' })
+  @ApiPropertyOptional({ example: 'cat-123' })
   @IsOptional()
-  @IsString({ message: 'Kategori harus berupa teks' })
-  kategori?: string;
+  @IsString({ message: 'ID Kategori harus berupa teks' })
+  idKategori?: string;
 
   @ApiPropertyOptional({ example: 'pcs' })
   @IsOptional()
