@@ -77,12 +77,12 @@ Sertakan token di header: \`Authorization: Bearer <token>\`
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document, {
-    useGlobalPrefix: false,
+    useGlobalPrefix: true,
   });
 
   await app.listen(3000);
   console.log('Application is running on: http://localhost:3000');
-  console.log('Swagger documentation: http://localhost:3000/docs');
+  console.log('Swagger documentation: http://localhost:3000/api/docs');
 }
 
 bootstrap();
