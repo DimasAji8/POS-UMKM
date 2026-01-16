@@ -17,7 +17,12 @@ async function bootstrap() {
   app.useGlobalInterceptors(new ResponseInterceptor());
   
   app.enableCors({
-    origin: true,
+    origin: [
+      'http://localhost:5173',
+      'https://fe-kasir-umkm.vercel.app',
+      'https://kasir-hilyas.tech',
+      /\.vercel\.app$/,
+    ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
